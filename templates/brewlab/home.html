@@ -1,0 +1,66 @@
+{% extends 'brewlab/base.html' %}
+
+{% block title %}Espresso Analyzer - Главная{% endblock %}
+
+{% block content %}
+<div class="coffee-header">
+    <div class="container text-center">
+        <h1 class="display-4">
+            <i class="fas fa-mug-hot"></i> Espresso Analyzer
+        </h1>
+        <p class="lead">Система анализа профиля кофе для дома</p>
+        <p class="small">Подбор оптимальной температуры заваривания и помола</p>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row text-center mb-5">
+        <div class="col-md-4 mb-3">
+            <div class="coffee-card">
+                <h2><i class="fas fa-seedling text-success"></i></h2>
+                <h3>{{ coffee_count }}</h3>
+                <p>Сортов кофе в базе</p>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="coffee-card">
+                <h2><i class="fas fa-book-open text-primary"></i></h2>
+                <h3>{{ recipe_count }}</h3>
+                <p>Рецептов заваривания</p>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="coffee-card">
+                <h2><i class="fas fa-chart-bar text-warning"></i></h2>
+                <h3>{{ prediction_count }}</h3>
+                <p>Прогнозов вкуса</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="coffee-card">
+                <h4><i class="fas fa-info-circle"></i> О проекте</h4>
+                <p>
+                    Этот сервис помогает любителям кофе
+                    подобрать оптимальные параметры заваривания на основе 
+                    характеристик зёрен.
+                </p>
+                <p>
+                    <strong>Как это работает:</strong>
+                    <ul>
+                        <li>Вы добавляете сорт кофе с его характеристиками</li>
+                        <li>Система рассчитывает его кислотность</li>
+                        <li>Для каждого рецепта создаётся прогноз вкуса</li>
+                        <li>Вы получаете рекомендацию по температуре</li>
+                    </ul>
+                </p>
+                <a href="{% url 'brewlab:coffee_list' %}" class="btn btn-primary">
+                    <i class="fas fa-arrow-right"></i> Смотреть сорта кофе
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

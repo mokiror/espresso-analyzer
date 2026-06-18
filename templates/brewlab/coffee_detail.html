@@ -1,0 +1,100 @@
+{% extends 'brewlab/base.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="coffee-header">
+    <div class="container">
+        <h1><i class="fas fa-seedling"></i> {{ coffee.name }}</h1>
+        <p>{{ coffee.origin_country }}{% if coffee.region %}, {{ coffee.region }}{% endif %}</p>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="coffee-card">
+                <h4><i class="fas fa-info-circle"></i> Характеристики</h4>
+                <table class="table">
+                    <tr>
+                        <td><strong>Страна:</strong></td>
+                        <td>{{ coffee.origin_country }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Регион:</strong></td>
+                        <td>{{ coffee.region|default:"Не указан" }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Высота:</strong></td>
+                        <td>{{ coffee.altitude_min }} - {{ coffee.altitude_max }} м</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Обработка:</strong></td>
+                        <td><span class="badge bg-secondary">{{ coffee.get_process_method_display }}</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Кислотность:</strong></td>
+                        <td><span class="badge badge-acidity">{{ coffee.acidity_score }}/10</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Плотность:</strong></td>
+                        <td>{{ coffee.density }} г/см³</td>
+                    </tr>
+                </table>
+                {% if coffee.description %}
+                <h5>Описание</h5>
+                <p>{{ coffee.description }}</p>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="col-md-8">
+            <div class="coffee-card">
+                <h4><i class="fas fa-book-open"></i> Рецепты для этого сорта</h4>
+                {% if recipes %}
+                    <div class="list-group">
+                        {% for recipe in recipes %}
+                        <a href="{% url 'brewlab:recipe_detail' recipe.id %}" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1">{{ recipe.name }}</h5>
+                                {% if recipe.is_recommended %}
+                                    <span class="badge bg-success">Рекомендации!! ⭐</span>
+                                {% endif %}
+                            </div>
+                            <p class="mb-1">
+                                🌡️ {{ recipe.water_temperature }}°C | 
+                                ⚙️ {{ recipe.get_grind_size_display }} | 
+                                ⏱️ {{ recipe.brew_time_seconds }} сек
+                            </p>
+                            <small>
+                                Соотношение 1:{{ recipe.get_ratio }} | 
+                                {{ recipe.coffee_dose }} г кофе / {{ recipe.water_volume }} мл воды
+                            </small>
+                            {% if recipe.prediction %}
+                                <br>
+                                <small class="text-muted">
+                                    Баланс: {{ recipe.prediction.get_balance_type_display }}
+                                </small>
+                            {% endif %}
+                        </a>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i> Нет рецептов для этого сорта. 
+                        <a href="/admin/brewlab/brewrecipe/add/" class="alert-link">Добавьте рецепт в админке!</a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mt-3">
+        <div class="col-12 text-center">
+            <a href="{% url 'brewlab:coffee_list' %}" class="btn btn-primary">
+                <i class="fas fa-arrow-left"></i> Все сорта
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

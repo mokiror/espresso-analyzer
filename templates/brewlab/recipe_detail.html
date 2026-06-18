@@ -1,0 +1,186 @@
+{% extends 'brewlab/base.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="coffee-header">
+    <div class="container">
+        <h1><i class="fas fa-book-open"></i> {{ recipe.name }}</h1>
+        <p>Рецепт для <strong>{{ recipe.coffee.name }}</strong></p>
+    </div>
+</div>
+
+<div class="container">
+    <!-- рецепты -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="coffee-card">
+                <h4><i class="fas fa-info-circle"></i> Параметры заваривания</h4>
+                <table class="table">
+                    <tr>
+                        <td><strong>Сорт кофейка ☕:</strong></td>
+                        <td><a href="{% url 'brewlab:coffee_detail' recipe.coffee.id %}">{{ recipe.coffee.name }}</a></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Температура воды 🌡️:</strong></td>
+                        <td><span class="badge bg-danger">{{ recipe.water_temperature }}°C</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Помол ⚙️:</strong></td>
+                        <td><span class="badge bg-secondary">{{ recipe.get_grind_size_display }}</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Время заваривания ⏱️:</strong></td>
+                        <td>{{ recipe.brew_time_seconds }} сек ({{ recipe.brew_time_seconds|divisibleby:60|yesno:"1 мин, " }}{{ recipe.brew_time_seconds|divisibleby:30|yesno:"30 сек, " }})</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Доза кофе ⚖️:</strong></td>
+                        <td>{{ recipe.coffee_dose }} г</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Объём воды 💧:</strong></td>
+                        <td>{{ recipe.water_volume }} мл</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Соотношение 📊:</strong></td>
+                        <td>1:{{ recipe.get_ratio }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Рекомендуемый:</strong></td>
+                        <td>{% if recipe.is_recommended %}✅ Да{% else %}❌ Нет{% endif %}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <!-- баланс -->
+        <div class="col-md-6">
+            <div class="coffee-card">
+                <h4><i class="fas fa-balance-scale"></i> Баланс вкуса</h4>
+                {% if balance_gauge %}
+                    {{ balance_gauge|safe }}
+                {% else %}
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i> Нет данных для отображения
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- треугольник вкуса -->
+    {% if triangle_chart %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="coffee-card">
+                <h4><i class="fas fa-chart-pie"></i> Треугольник вкусового профиля</h4>
+                <p class="text-muted small">Визуализация баланса кислотности, сладости и горечи</p>
+                {{ triangle_chart|safe }}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- график температуры -->
+    {% if temperature_chart %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="coffee-card">
+                <h4><i class="fas fa-temperature-high"></i> Влияние температуры на вкус</h4>
+                <p class="text-muted small">Как меняется профиль в зависимости от температуры заваривания</p>
+                {{ temperature_chart|safe }}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- детали -->
+    {% if prediction %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="coffee-card">
+                <h4><i class="fas fa-chart-bar"></i> Детальный прогноз</h4>
+                <div class="row">
+                    <div class="col-md-4 text-center">
+                        <div class="p-3" style="background: #fde8e8; border-radius: 10px;">
+                            <h5>🍋 Кислотность</h5>
+                            <h2>{{ prediction.acidity_intensity|floatformat:1 }}</h2>
+                            <div class="progress">
+                                <div class="progress-bar bg-danger" role="progressbar"
+                                     style="width: {{ prediction.acidity_intensity }}%;"
+                                     aria-valuenow="{{ prediction.acidity_intensity }}"
+                                     aria-valuemin="0" aria-valuemax="100">
+                                    {{ prediction.acidity_intensity|floatformat:0 }}%
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <div class="p-3" style="background: #e8f5e9; border-radius: 10px;">
+                            <h5>🍯 Сладость</h5>
+                            <h2>{{ prediction.sweetness_intensity|floatformat:1 }}</h2>
+                            <div class="progress">
+                                <div class="progress-bar bg-success" role="progressbar"
+                                     style="width: {{ prediction.sweetness_intensity }}%;"
+                                     aria-valuenow="{{ prediction.sweetness_intensity }}"
+                                     aria-valuemin="0" aria-valuemax="100">
+                                    {{ prediction.sweetness_intensity|floatformat:0 }}%
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <div class="p-3" style="background: #fff3e0; border-radius: 10px;">
+                            <h5>Горечь 🔥 </h5>
+                            <h2>{{ prediction.bitterness_intensity|floatformat:1 }}</h2>
+                            <div class="progress">
+                                <div class="progress-bar bg-warning" role="progressbar"
+                                     style="width: {{ prediction.bitterness_intensity }}%;"
+                                     aria-valuenow="{{ prediction.bitterness_intensity }}"
+                                     aria-valuemin="0" aria-valuemax="100">
+                                    {{ prediction.bitterness_intensity|floatformat:0 }}%
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <hr>
+
+                <div class="row mt-3">
+                    <div class="col-md-4">
+                        <p><strong>TDS:</strong> {{ prediction.tds_estimate }}%</p>
+                    </div>
+                    <div class="col-md-4">
+                        <p><strong>Экстракция:</strong> {{ prediction.extraction_yield }}%</p>
+                    </div>
+                    <div class="col-md-4">
+                        <p><strong>🔧 Рекомендация по температуре:</strong>
+                            {% if prediction.recommended_temperature_adjustment > 0 %}
+                                <span class="text-success">+{{ prediction.recommended_temperature_adjustment }}°C</span>
+                            {% elif prediction.recommended_temperature_adjustment < 0 %}
+                                <span class="text-danger">{{ prediction.recommended_temperature_adjustment }}°C</span>
+                            {% else %}
+                                <span class="text-primary">Идеально!</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- навигация -->
+    <div class="row mb-4">
+        <div class="col-12 text-center">
+            <a href="{% url 'brewlab:coffee_detail' recipe.coffee.id %}" class="btn btn-primary">
+                <i class="fas fa-arrow-left"></i> Назад к сорту
+            </a>
+            <a href="{% url 'brewlab:recipe_list' %}" class="btn btn-secondary">
+                <i class="fas fa-list"></i> Все рецепты
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

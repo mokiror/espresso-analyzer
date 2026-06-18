@@ -1,0 +1,118 @@
+{% extends 'brewlab/base.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="coffee-header">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1><i class="fas fa-seedling"></i> Сорта кофе</h1>
+                <p>Изучите характеристики разных сортов и найдите свой идеальный вкус ^^</p>
+            </div>
+            <div>
+                <a href="{% url 'brewlab:coffee_add' %}" class="btn btn-light">
+                    <i class="fas fa-plus"></i> Добавить сорт
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <!-- поиск -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <form method="GET" class="d-flex">
+                <input type="text" name="search" class="form-control me-2"
+                       placeholder="Поиск по названию или стране..."
+                       value="{{ search_query }}">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-search"></i>
+                </button>
+            </form>
+        </div>
+        <div class="col-md-6">
+            <form method="GET" class="d-flex">
+                <select name="process" class="form-select me-2">
+                    <option value="">Все методы обработки</option>
+                    {% for value, label in process_choices %}
+                        <option value="{{ value }}" {% if current_process == value %}selected{% endif %}>
+                            {{ label }}
+                        </option>
+                    {% endfor %}
+                </select>
+                <button type="submit" class="btn btn-secondary">Фильтр</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- сорта кофе -->
+    <div class="row">
+        {% for coffee in coffees %}
+        <div class="col-md-4 mb-4">
+            <div class="coffee-card">
+                <h4>{{ coffee.name }}</h4>
+                <p class="text-muted">
+                    <i class="fas fa-globe"></i> {{ coffee.origin_country }}
+                    {% if coffee.region %}, {{ coffee.region }}{% endif %}
+                </p>
+                <p>
+                    <span class="badge bg-secondary">{{ coffee.get_process_method_display }}</span>
+                    <span class="badge bg-info">Высота: {{ coffee.altitude_min }}-{{ coffee.altitude_max }}м</span>
+                </p>
+                <div class="d-flex justify-content-between align-items-center">
+                    <span>
+                        <strong>Кислотность:</strong>
+                        <span class="badge badge-acidity">{{ coffee.acidity_score }}/10</span>
+                    </span>
+                    <small class="text-muted">Рецептов: {{ coffee.recipes.count }}</small>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mt-2">
+                    <a href="{% url 'brewlab:coffee_detail' coffee.id %}" class="btn btn-sm btn-primary">
+                        <i class="fas fa-eye"></i> Подробнее
+                    </a>
+                    <div>
+                        <a href="{% url 'brewlab:coffee_edit' coffee.id %}" class="btn btn-sm btn-warning" title="Редактировать">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <a href="{% url 'brewlab:coffee_delete' coffee.id %}" class="btn btn-sm btn-danger" title="Удалить">
+                            <i class="fas fa-trash"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle"></i> Сортов кофе пока нет.
+                <a href="{% url 'brewlab:coffee_add' %}" class="alert-link">Добавьте первый сорт!</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% if is_paginated %}
+    <nav>
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}">&laquo;</a>
+                </li>
+            {% endif %}
+            {% for num in page_obj.paginator.page_range %}
+                <li class="page-item {% if page_obj.number == num %}active{% endif %}">
+                    <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                </li>
+            {% endfor %}
+            {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}">&raquo;</a>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+{% endblock %}
