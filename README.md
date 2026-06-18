@@ -11,4 +11,8 @@
 - **Bootstrap** 5.3 — адаптивный интерфейс
 - **SQLite** — база данных (разработка)
 
+## Ссылка на сайт 
+
+https://mokiror.pythonanywhere.com/
+
 
