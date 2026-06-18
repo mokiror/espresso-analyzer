@@ -1,5 +1,4 @@
 {% extends 'brewlab/base.html' %}
-
 {% block title %}{% if form.instance.pk %}Редактирование{% else %}Добавление{% endif %} сорта кофе{% endblock %}
 
 {% block content %}
@@ -49,7 +48,7 @@
                         <button type="submit" class="btn btn-primary">
                             {% if form.instance.pk %} Сохранить{% else %} Добавить{% endif %}
                         </button>
-                        <a href="{% url 'brewlab:coffee_list' %}" class="btn btn-secondary">❌ Отмена</a>
+                        <a href="{% url 'brewlab:coffee_list' %}" class="btn btn-secondary">❌ Отмена!!</a>
                     </div>
                 </form>
             </div>
