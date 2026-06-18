@@ -7,7 +7,7 @@ def calculate_acidity_factor(acidity_score, altitude, process_method):
 
     #расчет фактора кислотности зерна
 
-    #выше - кислее
+    #чем выше - тем кислее
     altitude_factor = min(1.5, altitude / 1200)
     
     #обработка
@@ -26,7 +26,6 @@ def calculate_acidity_factor(acidity_score, altitude, process_method):
 def calculate_extraction_rate(temperature, time_seconds, grind_factor, ratio):
 
     #скорость экстракции
-
     #температура
     if temperature < 85:
         temp_coef = 0.6
@@ -57,7 +56,6 @@ def calculate_extraction_rate(temperature, time_seconds, grind_factor, ratio):
 def calculate_tds(extraction_rate, ratio):
 
     #роцент растворённых веществ
-
     base_extraction_pct = extraction_rate * 20
     ratio_correction = 16 / ratio if ratio > 0 else 1
     tds = base_extraction_pct / ratio_correction / 16
@@ -65,7 +63,6 @@ def calculate_tds(extraction_rate, ratio):
 
 def predict_taste_profile(acidity_factor, extraction_rate, ratio=16):
 
-    #прогноз вкуса
     #кислотность
     acidity = acidity_factor * 60
     if extraction_rate < 0.6:
