@@ -6,13 +6,12 @@ import math
 def calculate_acidity_factor(acidity_score, altitude, process_method):
 
     #расчет фактора кислотности зерна
-
-    #чем выше - тем кислее
+    #чем выше - тем более кислотный
     altitude_factor = min(1.5, altitude / 1200)
     
     #обработка
     process_factors = {
-        'washed': 1.3,      #максимальная кислотность
+        'washed': 1.3,      #максимальная кислотность (pH)
         'honey': 1.0,       #средняя
         'natural': 0.7,     #низкая
     }
